@@ -1,12 +1,16 @@
 export function CalcularConsumo(
     watts: number,
     horasPorDia: number,
+    numeroArtefactos: number,
+    precioKwh: number = 0.85
 ) {
-    const diarioKwh = (watts * horasPorDia) / 1000;
-    const mensualKwh = diarioKwh * 30;
+    const consumoDiarioKwh = (watts * horasPorDia * numeroArtefactos) / 1000;
+    const consumoMensualKwh = consumoDiarioKwh * 30;
+    const costoMensual = consumoMensualKwh * precioKwh;
 
     return {
-        diarioKwh,
-        mensualKwh,
+        consumoDiarioKwh,
+        consumoMensualKwh,
+        costoMensual,
     };
 }
