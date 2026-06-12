@@ -12,22 +12,52 @@ interface ArtefactoCalculado {
   costoMensual: number;
 }
 
-const ZONAS_COCINA = [
-  { nombre: "Microondas", top: "18%", left: "66%", width: "24%", height: "18%", watts: 1200, horas: 0.5 },
-  { nombre: "Cafetera", top: "47%", left: "67%", width: "15%", height: "20%", watts: 800, horas: 0.5 },
-  { nombre: "Horno Eléctrico", top: "68%", left: "66%", width: "24%", height: "28%", watts: 1500, horas: 1.0 },
-  { nombre: "Batidora", top: "20%", left: "6%", width: "9%", height: "15%", watts: 300, horas: 0.2 },
-  { nombre: "Tostadora", top: "46%", left: "4%", width: "9%", height: "10%", watts: 800, horas: 0.2 },
-  { nombre: "Hervidor", top: "45%", left: "19%", width: "8%", height: "12%", watts: 1500, horas: 0.3 },
-  { nombre: "Licuadora", top: "44%", left: "33%", width: "8%", height: "14%", watts: 400, horas: 0.2 },
-  { nombre: "Olla Arrocera", top: "46%", left: "40%", width: "9%", height: "13%", watts: 700, horas: 1.0 },
-  { nombre: "Cocina / Estufa", top: "63%", left: "48%", width: "17%", height: "35%", watts: 3000, horas: 2.0 },
-  { nombre: "Nevera", top: "18%", left: "82%", width: "16%", height: "80%", watts: 150, horas: 24.0 }
-];
+interface Zona {
+  nombre: string;
+  top: string;
+  left: string;
+  width: string;
+  height: string;
+  watts: number;
+  horas: number;
+}
+
+const HABITACIONES: Record<string, { titulo: string; imagen: string; zonas: Zona[] }> = {
+  cocina: {
+    titulo: "Cocina",
+    imagen: "/cocina.png",
+    zonas: [
+      { nombre: "Microondas", top: "18%", left: "66%", width: "24%", height: "18%", watts: 1200, horas: 0.5 },
+      { nombre: "Cafetera", top: "47%", left: "67%", width: "15%", height: "20%", watts: 800, horas: 0.5 },
+      { nombre: "Horno Eléctrico", top: "68%", left: "66%", width: "24%", height: "28%", watts: 1500, horas: 1.0 },
+      { nombre: "Batidora", top: "20%", left: "6%", width: "9%", height: "15%", watts: 300, horas: 0.2 },
+      { nombre: "Tostadora", top: "46%", left: "4%", width: "9%", height: "10%", watts: 800, horas: 0.2 },
+      { nombre: "Hervidor", top: "45%", left: "19%", width: "8%", height: "12%", watts: 1500, horas: 0.3 },
+      { nombre: "Licuadora", top: "44%", left: "33%", width: "8%", height: "14%", watts: 400, horas: 0.2 },
+      { nombre: "Olla Arrocera", top: "46%", left: "40%", width: "9%", height: "13%", watts: 700, horas: 1.0 },
+      { nombre: "Cocina / Estufa", top: "63%", left: "48%", width: "17%", height: "35%", watts: 3000, horas: 2.0 },
+      { nombre: "Nevera", top: "18%", left: "82%", width: "16%", height: "80%", watts: 150, horas: 24.0 }
+    ]
+  },
+  sala: {
+    titulo: "Sala",
+    imagen: "/sala.png",
+    zonas: [
+      { nombre: "Televisor", top: "30%", left: "35%", width: "30%", height: "25%", watts: 150, horas: 5.0 },
+      { nombre: "Aire Acondicionado", top: "5%", left: "40%", width: "20%", height: "10%", watts: 1200, horas: 6.0 },
+      { nombre: "Equipo de Sonido", top: "60%", left: "35%", width: "10%", height: "15%", watts: 80, horas: 3.0 },
+      { nombre: "Lámpara de Pie", top: "40%", left: "15%", width: "10%", height: "45%", watts: 40, horas: 4.0 },
+      { nombre: "Consola de Videojuegos", top: "60%", left: "55%", width: "10%", height: "10%", watts: 150, horas: 2.0 },
+      { nombre: "Ventilador", top: "50%", left: "75%", width: "15%", height: "35%", watts: 60, horas: 8.0 },
+      { nombre: "Router Wi-Fi", top: "58%", left: "28%", width: "6%", height: "6%", watts: 15, horas: 24.0 }
+    ]
+  }
+};
 
 export default function Home() {
-  const [precioKwh, setPrecioKwh] = useState("0.85");
+  const [precioKwh, setPrecioKwh] = useState("0.22");
   const [listaArtefactos, setListaArtefactos] = useState<ArtefactoCalculado[]>([]);
+  const [habitacionActiva, setHabitacionActiva] = useState<string>("cocina");
 
   // Formulario para agregar personalizados
   const [customNombre, setCustomNombre] = useState("");
@@ -45,7 +75,7 @@ export default function Home() {
     );
   };
 
-  const handleZonaClick = (zona: typeof ZONAS_COCINA[0]) => {
+  const handleZonaClick = (zona: Zona) => {
     const existe = isSelected(zona.nombre);
 
     if (existe) {
@@ -57,7 +87,7 @@ export default function Home() {
       );
     } else {
       // Si no existe, lo agregamos con valores predeterminados
-      const precioNum = Number(precioKwh) || 0.85;
+      const precioNum = Number(precioKwh) || 0.22;
       const calculo = CalcularConsumo(zona.watts, zona.horas, 1, precioNum);
 
       const nuevo: ArtefactoCalculado = {
@@ -80,7 +110,7 @@ export default function Home() {
     const wattsNum = Number(customWatts);
     const horasNum = Number(customHoras);
     const cantidadNum = Number(customCantidad);
-    const precioNum = Number(precioKwh) || 0.85;
+    const precioNum = Number(precioKwh) || 0.22;
 
     const calculo = CalcularConsumo(wattsNum, horasNum, cantidadNum, precioNum);
 
@@ -107,7 +137,7 @@ export default function Home() {
     campo: keyof Omit<ArtefactoCalculado, "nombre" | "consumoMensualKwh" | "costoMensual">,
     valor: number
   ) => {
-    const precioNum = Number(precioKwh) || 0.85;
+    const precioNum = Number(precioKwh) || 0.22;
     const listaActualizada = listaArtefactos.map((item, idx) => {
       if (idx !== index) return item;
 
@@ -129,23 +159,6 @@ export default function Home() {
     setListaArtefactos(listaActualizada);
   };
 
-  // Recalcular todo cuando cambia el precio del kWh
-  const actualizarPrecioKwh = (nuevoPrecio: string) => {
-    setPrecioKwh(nuevoPrecio);
-    const precioNum = Number(nuevoPrecio) || 0.85;
-
-    const listaRecalculada = listaArtefactos.map((item) => {
-      const calculo = CalcularConsumo(item.watts, item.horas, item.cantidad, precioNum);
-      return {
-        ...item,
-        consumoMensualKwh: calculo.consumoMensualKwh,
-        costoMensual: calculo.costoMensual,
-      };
-    });
-
-    setListaArtefactos(listaRecalculada);
-  };
-
   const eliminarArtefacto = (index: number) => {
     setListaArtefactos(listaArtefactos.filter((_, idx) => idx !== index));
   };
@@ -157,6 +170,8 @@ export default function Home() {
   const totalConsumoMensual = listaArtefactos.reduce((sum, item) => sum + item.consumoMensualKwh, 0);
   const totalCostoMensual = listaArtefactos.reduce((sum, item) => sum + item.costoMensual, 0);
 
+  const habitacionInfo = HABITACIONES[habitacionActiva];
+
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-50 transition-colors duration-200">
       {/* Cabecera */}
@@ -166,7 +181,7 @@ export default function Home() {
             Simulador de Energía Residencial
           </span>
           <span className="text-xs text-slate-500 dark:text-zinc-400">
-            Haz clic en la cocina para agregar electrodomésticos
+            Haz clic en los ambientes para interactuar con los artefactos
           </span>
         </div>
         <div className="flex items-center gap-4">
@@ -181,24 +196,41 @@ export default function Home() {
       </header>
 
       <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
-
+        
         {/* LADO IZQUIERDO: Imagen Interactiva y Formulario Custom */}
         <div className="lg:col-span-5 flex flex-col gap-6">
+          
+          {/* Selectores de Ambiente (Tabs) */}
+          <div className="flex gap-2 p-1 bg-slate-200/60 dark:bg-zinc-900/60 rounded-xl">
+            {Object.keys(HABITACIONES).map((key) => (
+              <button
+                key={key}
+                onClick={() => setHabitacionActiva(key)}
+                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
+                  habitacionActiva === key
+                    ? "bg-white dark:bg-zinc-800 shadow-sm text-blue-600 dark:text-blue-400"
+                    : "text-slate-600 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200"
+                }`}
+              >
+                {HABITACIONES[key].titulo}
+              </button>
+            ))}
+          </div>
 
           {/* Contenedor de la Imagen */}
           <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm">
             <h2 className="text-sm font-bold text-slate-500 dark:text-zinc-400 mb-3 uppercase tracking-wider">
-              Vista de la Cocina
+              Vista de la {habitacionInfo.titulo}
             </h2>
             <div className="relative rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-950">
               <img
-                src="/cocina.png"
-                alt="Cocina Interactiva"
+                src={habitacionInfo.imagen}
+                alt={`Ambiente de ${habitacionInfo.titulo}`}
                 className="w-full h-auto object-cover"
               />
 
-              {/* Zonas Seleccionables */}
-              {ZONAS_COCINA.map((zona) => {
+              {/* Zonas Seleccionables de la Habitación Activa */}
+              {habitacionInfo.zonas.map((zona) => {
                 const activo = isSelected(zona.nombre);
                 return (
                   <button
@@ -212,10 +244,11 @@ export default function Home() {
                       height: zona.height,
                     }}
                     title={`${zona.nombre} (Promedio: ${zona.watts}W, ${zona.horas}h/día)`}
-                    className={`border-2 rounded transition-all duration-200 cursor-pointer ${activo
-                      ? "bg-green-500/20 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.4)]"
-                      : "bg-transparent border-transparent hover:bg-blue-500/10 hover:border-blue-500/60"
-                      }`}
+                    className={`border-2 rounded transition-all duration-200 cursor-pointer ${
+                      activo
+                        ? "bg-green-500/20 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.4)]"
+                        : "bg-transparent border-transparent hover:bg-blue-500/10 hover:border-blue-500/60"
+                    }`}
                     aria-label={`Seleccionar ${zona.nombre}`}
                   />
                 );
@@ -320,7 +353,7 @@ export default function Home() {
               {listaArtefactos.length === 0 ? (
                 <div className="text-center py-16 text-slate-400 dark:text-zinc-500 flex flex-col items-center gap-2">
                   <span>💡</span>
-                  <span>Selecciona elementos en la cocina interactiva o agrégalos manualmente.</span>
+                  <span>Selecciona elementos en las habitaciones interactivas o agrégalos manualmente.</span>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
