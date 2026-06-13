@@ -58,7 +58,7 @@ export const HABITACIONES: Record<string, Habitacion> = {
   },
   cuarto: {
     titulo: "Dormitorio / Estudio",
-    imagen: "/cuarto.png",
+    imagen: "/cuartoAncho.png",
     zonas: [
       { nombre: "Computadora", top: "62%", left: "41%", width: "24%", height: "5%", watts: 250, horas: 4.0 },
       { nombre: "Laptop", top: "52%", left: "16%", width: "16%", height: "15%", watts: 60, horas: 5.0 },
